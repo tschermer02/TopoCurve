@@ -1,10 +1,13 @@
-import zarr
+#pip install numpy
+#pip install geotiff
+#pip install Pillow
+
 from geotiff import GeoTiff
 from PIL import Image
 import numpy as np
 from scipy import signal
 
-tiff_file = "C:\\Users\\tsche\\source\\repos\\TopoCurve\\DEM_files\\Durango_Clip.tif"
+tiff_file = "C:/Users/tsche/source/repos/TopoCurve/DEM_files/Durango_Clip.tif"
 
 bounding_box = [(50.0, -10.8), (50.3, -10.9)]
 geoTiff = GeoTiff(tiff_file)
