@@ -32,4 +32,7 @@ print(dimy)
 
 Z_detrended = signal.detrend(zarray)
 
+plane = zarray-Z_detrended
+
 print(Z_detrended)
+print(plane)
