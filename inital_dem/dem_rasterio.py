@@ -22,7 +22,11 @@ print(dx)
 dy = abs(dem_array[0][0][0] -dem_array[0][1][0])
 print(dy)
 
-print(dem_array.shape)
+dim_x = dem_array.shape[1]
+dim_y = dem_array.shape[2]
+
+print(dim_x)
+print(dim_y)
 
 dem_array_detrend = signal.detrend(dem_array)
 print(dem_array_detrend)
