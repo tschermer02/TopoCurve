@@ -2,7 +2,8 @@ import numpy as np
 from scipy import signal
 
 class Dem_Class():
-    def __init__(self, z_array, dimx, dimy):
+    def __init__(self, array, dimx, dimy):
+        z_array = np.array(array)
         self.z_array = z_array
         self.dimx= dimx
         self.dimy = dimy
