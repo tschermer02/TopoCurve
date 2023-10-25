@@ -1,12 +1,9 @@
 #pip install numpy
 #pip install geotiff
 #pip install Pillow
+# pip install scipy
 
 from geotiff import GeoTiff
-from PIL import Image
-import numpy as np
-from scipy import signal
-
 from dem_geotiff_class import Dem_Class
 
 tiff_file = "C:/Users/tsche/source/repos/TopoCurve/DEM_files/Durango_Clip.tif"
