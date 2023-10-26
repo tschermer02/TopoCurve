@@ -12,8 +12,8 @@ geoTiff = GeoTiff(tiff_file)
 array = geoTiff.read()
 dimx,dimy = geoTiff.tif_shape
 
-dem1 = Dem_Class(array, dimx, dimy)
+dem = Dem_Class(array, dimx, dimy)
 
-print(dem1.z_array)
-print(dem1.dx_dy())
-print(dem1.detrend())
+print(dem.z_array)
+print(dem.dx_dy())
+print(dem.detrend())
