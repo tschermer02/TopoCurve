@@ -8,7 +8,6 @@ from dem_geotiff_class import Dem_Class
 
 tiff_file = "C:/Users/tsche/source/repos/TopoCurve/DEM_files/Durango_Clip.tif"
 
-bounding_box = [(50.0, -10.8), (50.3, -10.9)]
 geoTiff = GeoTiff(tiff_file)
 array = geoTiff.read()
 dimx,dimy = geoTiff.tif_shape
