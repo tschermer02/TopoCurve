@@ -13,7 +13,7 @@ from scipy import signal
 
 from dem_ras_class import Dem_Ras_Class
 
-dem_test = Dem_Ras_Class("C:/Users/Joeln/source/repos/TopoCurve/DEM_files/Durango_Clip.tif")
+dem_test = Dem_Ras_Class("C:/Users/tsche/source/repos/TopoCurve/DEM_files/Durango_Clip.tif")
 
 z_detrended, plane = dem_test.detrend()
 
@@ -47,9 +47,10 @@ top = np.concatenate((rtc, ts, ltc), axis = None)
 mid = np.concatenate((ls, cen, rs), axis = None)
 bot = np.concatenate((rbc, bs, lbc), axis = None)
 
-Zm = np.vstack((top, mid, bot), axis = 0)
+Zm = np.vstack((top, mid, bot))
 # Zm.extend(ts); Zm.extend(ltc); Zm.extend(ls); Zm.extend(cen); Zm.extend(rs); Zm.extend(rbc); Zm.extend(bs); Zm.extend(lbc);
 
+print(top)
 print(z_detrended.size)
 print(Zm.size)
 
