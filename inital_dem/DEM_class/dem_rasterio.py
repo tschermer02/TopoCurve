@@ -3,13 +3,10 @@
 # pip install matplotlib
 # pip install scipy
 
-
-
 import numpy as np
 import rasterio as rio
 from rasterio.plot import show
 import matplotlib.pyplot as plt
-from scipy import signal
 
 from dem_ras_class import Dem_Ras_Class
 
@@ -43,18 +40,19 @@ bs = np.flipud(z_detrended)
 lbc = np.rot90(z_detrended,2)
 
 # rtc, ts, ltc, ls, cen, rs, rbc, bs , lbc
-top = np.concatenate((rtc, ts, ltc), axis = None)
-mid = np.concatenate((ls, cen, rs), axis = None)
-bot = np.concatenate((rbc, bs, lbc), axis = None)
+top = np.concatenate((rtc, ts, ltc), axis = 1)
+mid = np.concatenate((ls, cen, rs), axis = 1)
+bot = np.concatenate((rbc, bs, lbc), axis = 1)
 
-Zm = np.vstack((top, mid, bot))
-# Zm.extend(ts); Zm.extend(ltc); Zm.extend(ls); Zm.extend(cen); Zm.extend(rs); Zm.extend(rbc); Zm.extend(bs); Zm.extend(lbc);
+Zm = np.concatenate((top, mid, bot), axis = 0)
 
-print(top)
-print(z_detrended.size)
-print(Zm.size)
+#print(top)
+print(z_detrended)
+#print(Zm)
 
+'''
 fig, ax = plt.subplots(1, figsize=(12, 12))
 show(Zm, cmap='Greys_r', ax=ax)
 plt.axis("off")
 plt.show()
+'''
