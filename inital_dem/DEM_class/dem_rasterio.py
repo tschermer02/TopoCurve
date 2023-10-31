@@ -12,33 +12,17 @@ import matplotlib.pyplot as plt
 from scipy import signal
 
 from dem_ras_class import Dem_Ras_Class
-'''
-dem = rio.open("C:/Users/Joeln/source/repos/TopoCurve/DEM_files/Durango_Clip.tif")
-# dem_array = dem.read(1).astype('float64')
-
-dem_array = dem.read()
-
-print(dem_array)
-
-dx = abs(dem_array[0][0][0] -dem_array[0][0][1])
-print(dx)
-
-dy = abs(dem_array[0][0][0] -dem_array[0][1][0])
-print(dy)
-
-dim_x = dem_array.shape[1]
-dim_y = dem_array.shape[2]
-
-print(dim_x)
-print(dim_y)
-
-dem_array_detrend = signal.detrend(dem_array)
-print(dem_array_detrend)
-'''
 
 dem_test = Dem_Ras_Class("C:/Users/Joeln/source/repos/TopoCurve/DEM_files/Durango_Clip.tif")
-
+'''
 print(dem_test.z_array)
 print(dem_test.dx_dy())
 print(dem_test.dimx_dimy())
 print(dem_test.detrend())
+'''
+
+fig, ax = plt.subplots(1, figsize=(12, 12))
+show(dem_test.detrend, cmap='Greys_r', ax=ax)
+show(dem_test.detrend, contour=False,  linewidths=0.7)
+plt.axis("off")
+plt.show()
