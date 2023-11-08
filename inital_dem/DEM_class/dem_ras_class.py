@@ -3,6 +3,9 @@ from scipy import signal
 import numpy as np
 from rasterio.plot import show
 import matplotlib.pyplot as plt
+import math
+from scipy.fft import fft, fftshift
+from photutils.psf import TukeyWindow
 
 class Dem_Ras_Class():
     def __init__(self, dem_path):
@@ -40,4 +43,45 @@ class Dem_Ras_Class():
 
         Zm = np.concatenate((top, mid, bot), axis=0)
         return Zm
+
+
+    def padding_array(self, input):
+        dim_x =  len(input)
+        dim_y =  len(input[0])
         
+        if(dim_x > dim_y):
+            N = dim_x
+            a = int(math.log2(N))
+            if 2**a == N:
+                self.power_of2 = N
+            self.power_of2 = 2**(a + 1)
+        
+        if(dim_x < dim_y):
+            N = dim_y
+            a = int(math.log2(N))
+            if 2**a == N:
+                self.power_of2 = N
+            self.power_of2 = 2**(a + 1)
+
+        pad_x_max = math.ceil((self.power_of2 - dim_x)/2)
+        pad_x_min = math.floor((self.power_of2 - dim_x)/2)
+        pad_y_max = math.ceil((self.power_of2 - dim_y)/2)
+        pad_y_min = math.floor((self.power_of2 - dim_y)/2)
+
+        self.array = np.pad(input,((pad_x_max, pad_x_min), (pad_y_max, pad_y_min)), 'constant', constant_values= (0,0))
+        return self.array
+        
+
+    def tukey_window(self, input):
+        length = len(input)
+        taper = TukeyWindow(alpha=0.5)
+        data = taper((length, length))
+        return data * input
+
+
+        
+        
+
+
+
+
