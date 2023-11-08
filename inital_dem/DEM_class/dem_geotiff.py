@@ -1,7 +1,8 @@
 #pip install numpy
 #pip install geotiff
 #pip install Pillow
-# pip install scipy
+#pip install scipy
+#pip install photutils
 
 from geotiff import GeoTiff
 from dem_geotiff_class import Dem_Class
@@ -23,14 +24,12 @@ detrended, plane = dem.detrend()
 dem.plot(detrended, "greyscale_dem_detrend.png")
 
 # Mirroring DEM on all sides
-
 dimx_f,dimy_f, mirror = dem.mirror_dem()
 dem.plot(mirror, "greyscale_dem_mirror.png")
 
-print(dimx_f,dimy_f)
 # Padding array
-
 dem.plot(dem.padding(), "greyscale_dem_padding.png")
 
+#Tukey Window
+dem.plot(dem.tukeyWindow(), "tukeyWind.png")
 
-# https://www.geeksforgeeks.org/numpy-pad-function-in-python/

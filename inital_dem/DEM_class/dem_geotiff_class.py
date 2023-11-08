@@ -2,6 +2,9 @@ import numpy as np
 from scipy import signal
 from PIL import Image
 import math
+from photutils.psf import TukeyWindow
+
+
 
 class Dem_Class():
     def __init__(self, array, dimx, dimy):
@@ -54,8 +57,16 @@ class Dem_Class():
         pad_y_min = math.floor((powerOfTwo -self.dimy_f)/2)
 
         #pads array
-        padded_array =np.pad(self.mirrored_array, ((pad_x_max, pad_x_min), (pad_y_max, pad_y_min)), 'constant', constant_values=(0, 0))
-        return padded_array
+        self.padded_array =np.pad(self.mirrored_array, ((pad_x_max, pad_x_min), (pad_y_max, pad_y_min)), 'constant', constant_values=(0, 0))
+        return self.padded_array
+    
+    def tukeyWindow(self):
+        taper = TukeyWindow(alpha=1)
+        data = taper((len(self.padded_array), len(self.padded_array)))
+        newArray =np.multiply(data, self.padded_array)
+    
+        return newArray
+
     
 
   
