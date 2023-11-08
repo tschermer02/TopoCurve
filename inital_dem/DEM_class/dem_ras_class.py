@@ -14,9 +14,9 @@ class Dem_Ras_Class():
 
 
     def dimx_dimy(self):
-        dim_x =  self.z_array.shape[0]
-        dim_y =  self.z_array.shape[1]
-        return dim_x, dim_y
+        self.dim_x =  self.z_array.shape[0]
+        self.dim_y =  self.z_array.shape[1]
+        return self.dim_x, self.dim_y
 
 
     def dx_dy(self):
@@ -46,29 +46,29 @@ class Dem_Ras_Class():
 
 
     def padding_array(self, input):
-        dim_x =  len(input)
-        dim_y =  len(input[0])
+        x_dim =  len(input)
+        y_dim =  len(input[0])
         
-        if(dim_x > dim_y):
-            N = dim_x
+        if(x_dim > y_dim):
+            N = x_dim
             a = int(math.log2(N))
             if 2**a == N:
                 self.power_of2 = N
             self.power_of2 = 2**(a + 1)
         
-        if(dim_x < dim_y):
-            N = dim_y
+        if(x_dim < y_dim):
+            N = y_dim
             a = int(math.log2(N))
             if 2**a == N:
                 self.power_of2 = N
             self.power_of2 = 2**(a + 1)
 
-        pad_x_max = math.ceil((self.power_of2 - dim_x)/2)
-        pad_x_min = math.floor((self.power_of2 - dim_x)/2)
-        pad_y_max = math.ceil((self.power_of2 - dim_y)/2)
-        pad_y_min = math.floor((self.power_of2 - dim_y)/2)
+        self.pad_x_max = math.ceil((self.power_of2 - x_dim)/2)
+        self.pad_x_min = math.floor((self.power_of2 - x_dim)/2)
+        self.pad_y_max = math.ceil((self.power_of2 - y_dim)/2)
+        self.pad_y_min = math.floor((self.power_of2 - y_dim)/2)
 
-        self.array = np.pad(input,((pad_x_max, pad_x_min), (pad_y_max, pad_y_min)), 'constant', constant_values= (0,0))
+        self.array = np.pad(input,((self.pad_x_max, self.pad_x_min), (self.pad_y_max, self.pad_y_min)), 'constant', constant_values= (0,0))
         return self.array
         
 
@@ -76,7 +76,11 @@ class Dem_Ras_Class():
         length = len(input)
         taper = TukeyWindow(alpha=0.5)
         data = taper((length, length))
-        return data * input
+        output = data * input
+        self.dim_x =  self.z_array.shape[0]
+        self.dim_y =  self.z_array.shape[1]
+        
+        return output[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]
 
 
         
