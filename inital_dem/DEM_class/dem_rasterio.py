@@ -23,12 +23,11 @@ print(dem_test.detrended)
 
 
 mirrored = dem_test.mirror_array()
-# dem_test.plot_func(mirrored)
-pad_mir = dem_test.padding_array(mirrored)
-dem_test.plot_func(pad_mir)
-tukey_win = dem_test.tukey_window(pad_mir)
+tukey_win = dem_test.tukey_window(mirrored)
 dem_test.plot_func(tukey_win)
-#print(tukey_win)
+pad_array = dem_test.padding_array(tukey_win)
+dem_test.plot_func(pad_array)
+
 
 # dem_test.plot_func(dem_test.mirror_array())
 

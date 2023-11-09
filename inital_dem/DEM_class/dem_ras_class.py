@@ -74,8 +74,9 @@ class Dem_Ras_Class():
 
     def tukey_window(self, input):
         length = len(input)
+        width = len(input[0])
         taper = TukeyWindow(alpha=0.5)
-        data = taper((length, length))
+        data = taper((length, width))
         output = data * input
         self.dim_x =  self.z_array.shape[0]
         self.dim_y =  self.z_array.shape[1]
