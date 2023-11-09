@@ -80,8 +80,10 @@ class Dem_Ras_Class():
         self.dim_x =  self.z_array.shape[0]
         self.dim_y =  self.z_array.shape[1]
         
-        return output[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]
+        # this commented code with cut out the origanal size after the tukey window is applied.
+        #output[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]
 
+        return output
 
         
         
