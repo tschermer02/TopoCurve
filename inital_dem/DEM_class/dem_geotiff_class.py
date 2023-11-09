@@ -51,21 +51,22 @@ class Dem_Class():
         powerOfTwo= 2**(a+1)
 
         # Finds difference in dimention of final array and power of two
-        pad_x_max = math.ceil((powerOfTwo -self.dimx_f)/2)
-        pad_x_min = math.floor((powerOfTwo -self.dimx_f)/2)
-        pad_y_max =math.ceil((powerOfTwo -self.dimy_f)/2)
-        pad_y_min = math.floor((powerOfTwo -self.dimy_f)/2)
+        self.pad_x_max = math.ceil((powerOfTwo -self.dimx_f)/2)
+        self.pad_x_min = math.floor((powerOfTwo -self.dimx_f)/2)
+        self.pad_y_max =math.ceil((powerOfTwo -self.dimy_f)/2)
+        self.pad_y_min = math.floor((powerOfTwo -self.dimy_f)/2)
 
         #pads array
-        self.padded_array =np.pad(self.mirrored_array, ((pad_x_max, pad_x_min), (pad_y_max, pad_y_min)), 'constant', constant_values=(0, 0))
+        self.padded_array =np.pad(self.tukey_array, ((self.pad_x_max, self.pad_x_min), (self.pad_y_max, self.pad_y_min)), 'constant', constant_values=(0, 0))
         return self.padded_array
     
-    def tukeyWindow(self):
-        taper = TukeyWindow(alpha=1)
-        data = taper((len(self.padded_array), len(self.padded_array)))
-        newArray =np.multiply(data, self.padded_array)
+    def tukeyWindow(self, alphaIn):
+        taper = TukeyWindow(alpha=alphaIn)
+        data = taper((len(self.mirrored_array), len(self.mirrored_array[0])))
+        self.tukey_array =np.multiply(data, self.mirrored_array)
     
-        return newArray
+        return self.tukey_array
+
 
     
 

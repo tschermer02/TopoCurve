@@ -27,9 +27,8 @@ dem.plot(detrended, "greyscale_dem_detrend.png")
 dimx_f,dimy_f, mirror = dem.mirror_dem()
 dem.plot(mirror, "greyscale_dem_mirror.png")
 
+#Tukey Window
+dem.plot(dem.tukeyWindow(0.5), "tukeyWind.png")
+
 # Padding array
 dem.plot(dem.padding(), "greyscale_dem_padding.png")
-
-#Tukey Window
-dem.plot(dem.tukeyWindow(), "tukeyWind.png")
-
