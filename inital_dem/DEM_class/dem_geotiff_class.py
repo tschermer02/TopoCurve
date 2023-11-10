@@ -3,20 +3,53 @@ from scipy import signal
 from PIL import Image
 import math
 from photutils.psf import TukeyWindow
-
-
+from tifffile import TiffFile
+from geotiff import GeoTiff
 
 class Dem_Class():
-    def __init__(self, array, dimx, dimy):
-        z_array = array
-        self.z_array = z_array
-        self.dimx= dimx
-        self.dimy = dimy
-
-    def dx_dy(self):
-        dx = abs(self.z_array[(0,0)]-self.z_array[(0,1)])
-        dy = abs(self.z_array[(0,0)]-self.z_array[(1,0)])
-        return dx,dy
+    def __init__(self, tiff_file):
+        tif=TiffFile(tiff_file);
+        
+        
+        # Ensure input file is of the right type and contains georeferencing information
+        if not tif.is_geotiff:
+            raise Exception("Not a geotiff file")
+            
+        if not tif.geotiff_metadata:
+            raise Exception("Metadata missing")
+            
+        
+        # Store projection information               
+        self.metadata={'GeogAngularUnitsGeoKey': tif.geotiff_metadata["GeogAngularUnitsGeoKey"],
+                       'GeogCitationGeoKey': tif.geotiff_metadata["GeogCitationGeoKey"],
+                       'GTCitationGeoKey': tif.geotiff_metadata["GTCitationGeoKey"],
+                       'GTModelTypeGeoKey': tif.geotiff_metadata["GTModelTypeGeoKey"],
+                       'GTRasterTypeGeoKey': tif.geotiff_metadata["GTRasterTypeGeoKey"],
+                       'KeyDirectoryVersion': tif.geotiff_metadata["KeyDirectoryVersion"],
+                       'KeyRevision': tif.geotiff_metadata["KeyRevision"],
+                       'KeyRevisionMinor': tif.geotiff_metadata["KeyRevisionMinor"],
+                       'ModelPixelScale': tif.geotiff_metadata["ModelPixelScale"],
+                       'ModelTiepoint': tif.geotiff_metadata["ModelTiepoint"],
+                       'ProjectedCSTypeGeoKey': tif.geotiff_metadata["ProjectedCSTypeGeoKey"],
+                       'ProjLinearUnitsGeoKey': tif.geotiff_metadata["ProjLinearUnitsGeoKey"],}
+        
+        crs= tif.geotiff_metadata["ProjectedCSTypeGeoKey"].value
+        
+        # Pull out array of elevation values and store it as array within the dem class
+        gtiff=GeoTiff(tiff_file, crs_code=crs)
+        self.z_array = gtiff.read()
+        
+        # Pull out dimensions of DEM grid
+        self.dimx,self.dimy=gtiff.tif_shape
+        
+        # Assign grid spacing and check to ensure grid spacing is uniform in x and y directions
+        dx=tif.geotiff_metadata["ModelPixelScale"]
+        
+        if abs(dx[1]-dx[0]) <1e-3:
+            self.dx_dy=dx[0]
+        else:
+            raise Exception("WARNING: Grid spacing is not uniform in x and y directions!")
+            
 
     def detrend(self):
         self.Z_detrended = signal.detrend(self.z_array)

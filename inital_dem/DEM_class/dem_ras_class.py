@@ -6,24 +6,53 @@ import matplotlib.pyplot as plt
 import math
 from scipy.fft import fft, fftshift
 from photutils.psf import TukeyWindow
+from tifffile import TiffFile
 
 class Dem_Ras_Class():
     def __init__(self, dem_path):
+        
+        tif=TiffFile(dem_path);
+        
+        
+        # Ensure input file is of the right type and contains georeferencing information
+        if not tif.is_geotiff:
+            raise Exception("Not a geotiff file")
+            
+        if not tif.geotiff_metadata:
+            raise Exception("Metadata missing")
+            
+        
+        # Store projection information               
+        self.metadata={'GeogAngularUnitsGeoKey': tif.geotiff_metadata["GeogAngularUnitsGeoKey"],
+                       'GeogCitationGeoKey': tif.geotiff_metadata["GeogCitationGeoKey"],
+                       'GTCitationGeoKey': tif.geotiff_metadata["GTCitationGeoKey"],
+                       'GTModelTypeGeoKey': tif.geotiff_metadata["GTModelTypeGeoKey"],
+                       'GTRasterTypeGeoKey': tif.geotiff_metadata["GTRasterTypeGeoKey"],
+                       'KeyDirectoryVersion': tif.geotiff_metadata["KeyDirectoryVersion"],
+                       'KeyRevision': tif.geotiff_metadata["KeyRevision"],
+                       'KeyRevisionMinor': tif.geotiff_metadata["KeyRevisionMinor"],
+                       'ModelPixelScale': tif.geotiff_metadata["ModelPixelScale"],
+                       'ModelTiepoint': tif.geotiff_metadata["ModelTiepoint"],
+                       'ProjectedCSTypeGeoKey': tif.geotiff_metadata["ProjectedCSTypeGeoKey"],
+                       'ProjLinearUnitsGeoKey': tif.geotiff_metadata["ProjLinearUnitsGeoKey"],}
+        
+        
+        # Pull out array of elevation values and store it as array within the dem class
         dem = rio.open(dem_path)
         self.z_array = dem.read(1).astype('float64')
-
-
-    def dimx_dimy(self):
-        self.dim_x =  self.z_array.shape[0]
-        self.dim_y =  self.z_array.shape[1]
-        return self.dim_x, self.dim_y
-
-
-    def dx_dy(self):
-        dx = abs(self.z_array[0][0] -self.z_array[0][1])
-        dy = abs(self.z_array[0][0] -self.z_array[1][0])
-        return dx,dy
-
+        
+        # Pull out dimensions of DEM grid
+        self.dimx=dem.width
+        self.dimy=dem.height
+        
+        # Assign grid spacing and check to ensure grid spacing is uniform in x and y directions
+        dx=tif.geotiff_metadata["ModelPixelScale"]
+        
+        if abs(dx[1]-dx[0]) <1e-3:
+            self.dx_dy=dx[0]
+        else:
+            raise Exception("WARNING: Grid spacing is not uniform in x and y directions!")
+        
 
     def detrended(self):
         self.detrend = signal.detrend(self.z_array)
