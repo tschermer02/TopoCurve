@@ -4,19 +4,14 @@
 #pip install scipy
 #pip install photutils
 
-from geotiff import GeoTiff
 from dem_geotiff_class import Dem_Class
 from PIL import Image
 import numpy as np
 
-tiff_file = "C:/Users/tsche/source/repos/TopoCurve/DEM_files/Durango_Clip.tif"
+tiff_file = "../../DEM_files/Durango_Clip.tif"
 
 # Initializing DEM class
-geoTiff = GeoTiff(tiff_file)
-array = geoTiff.read()
-dimx,dimy = geoTiff.tif_shape
-
-dem = Dem_Class(array, dimx, dimy)
+dem = Dem_Class(tiff_file)
 
 detrended, plane = dem.detrend()
 

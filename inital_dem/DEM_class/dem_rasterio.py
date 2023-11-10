@@ -11,7 +11,9 @@ import matplotlib.pyplot as plt
 
 from dem_ras_class import Dem_Ras_Class
 
-dem_test = Dem_Ras_Class("C:/Users/Joeln/source/repos/TopoCurve/DEM_files/Durango_Clip.tif")
+tiff_file= "../../DEM_files/Durango_Clip.tif"
+
+dem_test = Dem_Ras_Class(tiff_file)
 
 z_detrended, plane = dem_test.detrended()
 '''
