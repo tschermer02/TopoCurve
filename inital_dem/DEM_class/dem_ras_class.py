@@ -127,8 +127,7 @@ class Dem_Ras_Class():
 
         # Doing the 2d fourier transformation on the input.
         # https://docs.scipy.org/doc/scipy/tutorial/fft.html#and-n-d-discrete-fourier-transforms
-<<<<<<< HEAD
-
+        
         input_fft = fft2(input)
         dkx = 1/(self.dx * self.power_of2); dky = 1/(self.dx * self.power_of2) # Defining wave number increments.
         
@@ -165,6 +164,3 @@ class Dem_Ras_Class():
 
 
 
-=======
-        
->>>>>>> 05575cc1c7af80f4aee44137613c3d0f6cc9c445
