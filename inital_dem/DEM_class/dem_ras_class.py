@@ -117,3 +117,4 @@ class Dem_Ras_Class():
     
     def fftf_2d(self, input):
         # https://docs.scipy.org/doc/scipy/tutorial/fft.html#and-n-d-discrete-fourier-transforms
+        
