@@ -4,14 +4,14 @@ import numpy as np
 from rasterio.plot import show
 import matplotlib.pyplot as plt
 import math
-from scipy.fft import fft, fftshift
+from scipy.fft import fft2, fftshift, ifft2
 from photutils.psf import TukeyWindow
 from tifffile import TiffFile
 
 class Dem_Ras_Class():
     def __init__(self, dem_path):
         
-        tif=TiffFile(dem_path);
+        tif=TiffFile(dem_path)
         
         
         # Ensure input file is of the right type and contains georeferencing information
@@ -46,18 +46,18 @@ class Dem_Ras_Class():
         self.dimy=dem.height
         
         # Assign grid spacing and check to ensure grid spacing is uniform in x and y directions
-        dx=tif.geotiff_metadata["ModelPixelScale"]
+        self.dx = tif.geotiff_metadata["ModelPixelScale"]
         
-        if abs(dx[1]-dx[0]) <1e-3:
-            self.dx_dy=dx[0]
+        if abs(self.dx[1]-self.dx[0]) <1e-3:
+            self.dx_dy=self.dx[0]
         else:
             raise Exception("WARNING: Grid spacing is not uniform in x and y directions!")
       
 
-    def detrended(self):
-        self.detrend = signal.detrend(self.z_array)
-        plane = self.z_array-self.detrend
-        return self.detrend, plane
+    def detrend(self):
+        self.detrended = signal.detrend(self.z_array)
+        plane = self.z_array-self.detrended
+        return self.detrended, plane
     
     def plot_func(self, input):
         fig, ax = plt.subplots(1, figsize = (12,12))
@@ -66,15 +66,36 @@ class Dem_Ras_Class():
         plt.show()
 
     def mirror_array(self):
-        top = np.concatenate((np.rot90(self.detrend,2), np.flipud(self.detrend), np.rot90(self.detrend,2)), axis = 1)
-        mid = np.concatenate((np.fliplr(self.detrend), self.detrend, np.fliplr(self.detrend)), axis =1)
-        bot = np.concatenate((np.rot90(self.detrend,2), np.flipud(self.detrend), np.rot90(self.detrend,2)), axis =1)
+        detrended, plane = self.detrend()
+
+        top = np.concatenate((np.rot90(detrended,2), np.flipud(detrended), np.rot90(detrended,2)), axis = 1)
+        mid = np.concatenate((np.fliplr(detrended), detrended, np.fliplr(detrended)), axis =1)
+        bot = np.concatenate((np.rot90(detrended,2), np.flipud(detrended), np.rot90(detrended,2)), axis =1)
 
         Zm = np.concatenate((top, mid, bot), axis=0)
         return Zm
 
 
-    def padding_array(self, input):
+    def tukey_window(self):
+        input = self.mirror_array()
+
+        length = len(input)
+        width = len(input[0])
+        taper = TukeyWindow(alpha=0.5)
+        data = taper((length, width))
+        output = data * input
+        self.dim_x =  self.z_array.shape[0]
+        self.dim_y =  self.z_array.shape[1]
+        
+        # this commented code will cut out the origanal size after the tukey window is applied..
+        #output[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]
+
+        return output
+
+
+    def padding_array(self):
+        input = self.tukey_window()
+
         x_dim =  len(input)
         y_dim =  len(input[0])
         
@@ -100,20 +121,46 @@ class Dem_Ras_Class():
         self.array = np.pad(input,((self.pad_x_max, self.pad_x_min), (self.pad_y_max, self.pad_y_min)), 'constant', constant_values= (0,0))
         return self.array
         
-
-    def tukey_window(self, input):
-        length = len(input)
-        width = len(input[0])
-        taper = TukeyWindow(alpha=0.5)
-        data = taper((length, width))
-        output = data * input
-        self.dim_x =  self.z_array.shape[0]
-        self.dim_y =  self.z_array.shape[1]
-        
-        # this commented code will cut out the origanal size after the tukey window is applied..
-        #output[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]
-
-        return output
     
-    def fftf_2d(self, input):
+    def fftf_2d(self, filter, filter_type):
+        input = self.padding_array()
+
+        # Doing the 2d fourier transformation on the input.
         # https://docs.scipy.org/doc/scipy/tutorial/fft.html#and-n-d-discrete-fourier-transforms
+
+        input_fft = fft2(input)
+        dkx = 1/(self.dx * self.power_of2); dky = 1/(self.dx * self.power_of2) # Defining wave number increments.
+        
+        # Making the radical wave number matrix
+        xc = self.power_of2/2+1; yc = self.power_of2/2+1 # 
+        [cols, rows] = np.meshgrid(self.power_of2 , self.power_of2) # matrices of column and row indices 
+        km = np.square(math.sqrt(dky*(rows - yc))) + np.square(math.sqrt(dkx*(rows - xc))) # matrix of radial wavenumbers
+
+        
+        match filter_type:
+
+            case 'lowpass':
+                kfilt=np.divide(1, filter)
+                sigma=abs(kfilt(1)-kfilt(0))/3
+                F= math.exp(-np.square((km-kfilt(0)))/(2*sigma^2))
+                F[km < kfilt(0)]=1
+
+            case 'highpass':
+                kfilt=1./filter
+                sigma=abs(kfilt(1)-kfilt(0))/3
+                F=math.exp(-1*np.square((km-kfilt(2)))/(2*sigma^2))
+                F[km >= kfilt(1)]=1
+
+        input_fft_real = np.real(ifft2(np.multiply(input_fft,F)))
+        '''
+        # What are this/ what are they doing?
+        obj.DEM.ZFilt=ZMWF(r+1:ny-r,c+1:nx-c)+plane
+        obj.DEM.ZDiff=obj.DEM.Z-obj.DEM.ZFilt
+        obj.Filter=Filter
+        '''
+        return input_fft_real
+
+
+
+
+
