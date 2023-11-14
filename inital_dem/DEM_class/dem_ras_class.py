@@ -52,7 +52,7 @@ class Dem_Ras_Class():
             self.dx_dy=dx[0]
         else:
             raise Exception("WARNING: Grid spacing is not uniform in x and y directions!")
-        
+      
 
     def detrended(self):
         self.detrend = signal.detrend(self.z_array)
@@ -110,14 +110,10 @@ class Dem_Ras_Class():
         self.dim_x =  self.z_array.shape[0]
         self.dim_y =  self.z_array.shape[1]
         
-        # this commented code with cut out the origanal size after the tukey window is applied.
+        # this commented code will cut out the origanal size after the tukey window is applied..
         #output[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]
 
         return output
-
-        
-        
-
-
-
-
+    
+    def fftf_2d(self, input):
+        # https://docs.scipy.org/doc/scipy/tutorial/fft.html#and-n-d-discrete-fourier-transforms
