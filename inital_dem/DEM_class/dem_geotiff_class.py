@@ -3,6 +3,7 @@ from scipy import signal
 from PIL import Image
 import math
 from photutils.psf import TukeyWindow
+from scipy.fft import fft2
 
 
 
@@ -67,6 +68,9 @@ class Dem_Class():
     
         return self.tukey_array
 
+    def FFT(self):
+       fft_array = fft2(self.tukey_array)
+       return fft_array
 
     
 

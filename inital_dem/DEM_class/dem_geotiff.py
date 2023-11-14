@@ -32,3 +32,7 @@ dem.plot(dem.tukeyWindow(0.5), "tukeyWind.png")
 
 # Padding array
 dem.plot(dem.padding(), "greyscale_dem_padding.png")
+
+# FFT
+dem.FFT()
+
