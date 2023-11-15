@@ -48,77 +48,92 @@ class Dem_Ras_Class():
         # Assign grid spacing and check to ensure grid spacing is uniform in x and y directions
         self.dx = tif.geotiff_metadata["ModelPixelScale"]
         
-        if abs(self.dx[1]-self.dx[0]) <1e-3:
+        if abs(self.dx[1]-self.dx[0]) <1e-3: # This checks if dx and dy are basically equal, T=contn. F=popup error.
             self.dx_dy=self.dx[0]
         else:
             raise Exception("WARNING: Grid spacing is not uniform in x and y directions!")
       
 
-    def detrend(self):
+    def detrend(self): #Function that detrends the array and outputs the detrended array and the plane used. 
+        
         self.detrended = signal.detrend(self.z_array)
         plane = self.z_array-self.detrended
+
         return self.detrended, plane
     
-    def plot_func(self, input):
+    def plot_func(self, input): #Function to plot array
+
         fig, ax = plt.subplots(1, figsize = (12,12))
         show(input, cmap='Greys_r', ax=ax)
         plt.axis("off")
         plt.show()
 
-    def mirror_array(self):
-        detrended, plane = self.detrend()
+    def mirror_array(self): #function that mirrors the array along the sides and rotates at corners.
 
+        detrended, plane = self.detrend() #runs detrened function to get detrended array.
+
+        #Concatenates(merge) top, middle, and bottom arrays horizontally.
         top = np.concatenate((np.rot90(detrended,2), np.flipud(detrended), np.rot90(detrended,2)), axis = 1)
         mid = np.concatenate((np.fliplr(detrended), detrended, np.fliplr(detrended)), axis =1)
         bot = np.concatenate((np.rot90(detrended,2), np.flipud(detrended), np.rot90(detrended,2)), axis =1)
 
+        #Concatenates top, middle, and bottom groups together vertically.
         Zm = np.concatenate((top, mid, bot), axis=0)
+
         return Zm
 
 
-    def tukey_window(self):
-        input = self.mirror_array()
+    def tukey_window(self): #Function that creates a tukey window and applies it to the mirrored array.
 
-        length = len(input)
+        input = self.mirror_array() #runs mirror function to get imput.
+
+        #Dimensions of mirrored array.
+        length = len(input) 
         width = len(input[0])
-        taper = TukeyWindow(alpha=0.5)
-        data = taper((length, width))
-        output = data * input
-        self.dim_x =  self.z_array.shape[0]
-        self.dim_y =  self.z_array.shape[1]
+
+        taper = TukeyWindow(alpha=0.5) #tukey window with alfa of 0.5.
+        data = taper((length, width)) #Creating the tukey window.
+        output = data * input #this is the tukey_window * mirrored_array.
         
         # this commented code will cut out the origanal size after the tukey window is applied..
+        # self.dim_x =  self.z_array.shape[0]
+        # self.dim_y =  self.z_array.shape[1]
         #output[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]
 
         return output
 
 
-    def padding_array(self):
-        input = self.tukey_window()
+    def padding_array(self): #Function that takes the tukey window and pads it to the next power of 2 with 0.
 
+        input = self.tukey_window() #Runs tukey window function for the input.
+
+        #dimentions of the mirrored tukey windowed array.
         x_dim =  len(input)
         y_dim =  len(input[0])
         
-        if(x_dim > y_dim):
+        if(x_dim > y_dim): #this uses the dimensions find the next power of 2 for x_dim.
             N = x_dim
             a = int(math.log2(N))
             if 2**a == N:
                 self.power_of2 = N
             self.power_of2 = 2**(a + 1)
         
-        if(x_dim < y_dim):
+        if(x_dim < y_dim): #this uses the dimensions find the next power of 2 for y_dim.
             N = y_dim
             a = int(math.log2(N))
             if 2**a == N:
                 self.power_of2 = N
             self.power_of2 = 2**(a + 1)
 
+        #This is to trim the padding down to fit around the mirrored tukey windowed array, so the x,y dimensions are the power of 2.
         self.pad_x_max = math.ceil((self.power_of2 - x_dim)/2)
         self.pad_x_min = math.floor((self.power_of2 - x_dim)/2)
         self.pad_y_max = math.ceil((self.power_of2 - y_dim)/2)
         self.pad_y_min = math.floor((self.power_of2 - y_dim)/2)
 
+        #This just brings it all together.
         self.array = np.pad(input,((self.pad_x_max, self.pad_x_min), (self.pad_y_max, self.pad_y_min)), 'constant', constant_values= (0,0))
+        
         return self.array
         
     
@@ -152,12 +167,14 @@ class Dem_Ras_Class():
                 F[km >= kfilt(1)]=1
 
         input_fft_real = np.real(ifft2(np.multiply(input_fft,F)))
+
         '''
         # What are this/ what are they doing?
         obj.DEM.ZFilt=ZMWF(r+1:ny-r,c+1:nx-c)+plane
         obj.DEM.ZDiff=obj.DEM.Z-obj.DEM.ZFilt
         obj.Filter=Filter
         '''
+
         return input_fft_real
 
 
