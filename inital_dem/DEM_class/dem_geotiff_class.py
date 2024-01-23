@@ -54,9 +54,9 @@ class Dem_Class():
             
 
     def detrend(self):
-        Z_detrended = signal.detrend(self.z_array)
-        plane = self.z_array-Z_detrended
-        return Z_detrended, plane
+        self.Z_detrended = signal.detrend(self.z_array)
+        self.plane = self.z_array-self.Z_detrended
+        return self.Z_detrended, self.plane
     
     def plot(self, input, filename):
         img_array = 255*((input - np.amin(input))/(np.amax(input)- np.amin(input)))
@@ -78,6 +78,9 @@ class Dem_Class():
         taper = TukeyWindow(alpha=alphaIn)
         data = taper((len(mirrored_array), len(mirrored_array[0])))
         tukey_array =np.multiply(data, mirrored_array)
+
+        self.dim_x =  self.z_array.shape[0]
+        self.dim_y =  self.z_array.shape[1]
     
         return tukey_array
 
@@ -96,45 +99,51 @@ class Dem_Class():
         self.powerOfTwo= 2**(a+1)
 
         # Finds difference in dimention of final array and power of two
-        pad_x_max = math.ceil((self.powerOfTwo -self.dimx_ma)/2)
-        pad_x_min = math.floor((self.powerOfTwo -self.dimx_ma)/2)
-        pad_y_max =math.ceil((self.powerOfTwo -self.dimy_ma)/2)
-        pad_y_min = math.floor((self.powerOfTwo -self.dimy_ma)/2)
+        self.pad_x_max = math.ceil((self.powerOfTwo -self.dimx_ma)/2)
+        self.pad_x_min = math.floor((self.powerOfTwo -self.dimx_ma)/2)
+        self.pad_y_max =math.ceil((self.powerOfTwo -self.dimy_ma)/2)
+        self.pad_y_min = math.floor((self.powerOfTwo -self.dimy_ma)/2)
 
         #pads array
-        padded_window_array =np.pad(tukey_array, ((pad_x_max, pad_x_min), (pad_y_max, pad_y_min)), 'constant', constant_values=(0, 0))
+        padded_window_array =np.pad(tukey_array, ((self.pad_x_max, self.pad_x_min), (self.pad_y_max, self.pad_y_min)), 'constant', constant_values=(0, 0))
         return padded_window_array
-
+    #(self, 1/200, "lowpass", 0.5)
     def FFT(self, filter, filterType, alphaIn):
         padded_window_array= self.padding(alphaIn)
         #Doing fft on the windowed and padded array
         fft_array = fft2(padded_window_array)
 
 
-        dkx = 1/(self.dx*self.powerOfTwo)
-        dky = 1/(self.dx*self.powerOfTwo)
+        dkx = np.divide(1,(self.dx*self.powerOfTwo))
+        dky = np.divide(1,(self.dx*self.powerOfTwo))
        
         xc = self.powerOfTwo/2+1; yc = self.powerOfTwo/2+1 #matrix indices of zero wavenumber
         [cols, rows] = np.meshgrid(self.powerOfTwo,self.powerOfTwo) #matrices of column and row indices
-        km = math.sqrt(np.square(dky*(rows-yc)) + np.square(dkx*(cols-xc))) #matrix of radial wavenumbers
+        km = np.sqrt(np.square(dky*(rows-yc)) + np.square(dkx*(cols-xc))) #matrix of radial wavenumbers
 
         match filterType:
             case 'lowpass':
                 kfilt=np.divide(np.ones_like(filter),filter)
-                sigma=abs(kfilt(1)-kfilt(0))/3
-                F=math.exp(-np.square(km-kfilt(0))/(2*sigma^2))
-                F[km<kfilt(1)]=1
+                print(kfilt)
+                sigma=abs(kfilt[1]-kfilt[0])/3
+                F = np.exp(-np.square(km - kfilt[0]) / (2 * sigma**2))
+                F=F/max(F[:])
+                F[km<kfilt[0]]=1
 
             case 'highpass':
                 kfilt=np.divide(np.ones_like(filter),filter)
-                sigma=abs(kfilt(1)-kfilt(0))/3
-                F=math.exp(-np.square(km-kfilt(1))/(2*sigma^2))
-                F[km>=kfilt(1)]=1
+                sigma=abs(kfilt[1]-kfilt[0])/3
+                F = np.exp(-np.square(km - kfilt[0]) / (2 * sigma**2))
+                F=F/max(F[:])
+                F[km>=kfilt[1]]=1
 
         ZMWF = np.real(ifft2(np.multiply(fft_array,F)))
-       
 
-        return ZMWF
+        self.Filter = filter
+        self.ZFilt = ZMWF[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]+self.plane
+        self.ZDiff = self.z_array-self.ZFilt
+
+        return self.ZFilt
 
     
 

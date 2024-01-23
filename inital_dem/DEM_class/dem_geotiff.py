@@ -29,8 +29,9 @@ detrended, plane = dem.detrend()
 #dem.plot(dem.tukeyWindow(0.5), "tukeyWind.png")
 
 # Padding array
-dem.plot(dem.padding(0.5), "greyscale_dem_padding.png")
+#dem.plot(dem.padding(0.5), "greyscale_dem_padding.png")
 
 # FFT
-#print(dem.FFT('lowpass'))
+ #(self, 1/200, "lowpass", 0.5)
+print(dem.FFT([200,2000], "lowpass", 0.5))
 
