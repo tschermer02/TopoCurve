@@ -96,7 +96,7 @@ class Dem_Class():
             a = int(math.log2(self.dimy_ma))
             if 2**a == self.dimy_ma:
                 self.powerOfTwo= self.dimy_ma
-        self.powerOfTwo= 2**(a+1)
+            self.powerOfTwo= 2**(a+1)
 
         # Finds difference in dimention of final array and power of two
         self.pad_x_max = math.ceil((self.powerOfTwo -self.dimx_ma)/2)
@@ -113,38 +113,44 @@ class Dem_Class():
         #Doing fft on the windowed and padded array
         fft_array = fft2(padded_window_array)
 
+        self.dx = np.array(self.dx)
+        self.powerOfTwo = np.array(self.powerOfTwo)
+        dkx = np.divide(1,(self.dx[0]*self.powerOfTwo))
 
-        dkx = np.divide(1,(self.dx*self.powerOfTwo))
-        dky = np.divide(1,(self.dx*self.powerOfTwo))
+        
+        dky = np.divide(1,(self.dx[0]*self.powerOfTwo))
        
         xc = self.powerOfTwo/2+1; yc = self.powerOfTwo/2+1 #matrix indices of zero wavenumber
-        [cols, rows] = np.meshgrid(self.powerOfTwo,self.powerOfTwo) #matrices of column and row indices
-        km = np.sqrt(np.square(dky*(rows-yc)) + np.square(dkx*(cols-xc))) #matrix of radial wavenumbers
+        km = np.ones((self.powerOfTwo, self.powerOfTwo))
+        
+        for i in range(self.powerOfTwo):
+            for j in range(self.powerOfTwo):
+                km[i][j] = np.sqrt(np.square(dky * (i - yc)) + np.square(dkx * (j - xc)))
+        
 
+        #Problem Need to do element wise distance formula
+        #km = np.sqrt(np.square(dky * (rows - yc)) + np.square(dkx * (cols - xc))) #matrix of radial wavenumbers
         match filterType:
             case 'lowpass':
                 kfilt=np.divide(np.ones_like(filter),filter)
-                print(kfilt)
                 sigma=abs(kfilt[1]-kfilt[0])/3
-                F = np.exp(-np.square(km - kfilt[0]) / (2 * sigma**2))
-                F=F/max(F[:])
+                F = np.exp(np.multiply(-1, np.square(km - kfilt[0])) / (2 * sigma**2))
+                F=F/np.max(F)
                 F[km<kfilt[0]]=1
 
             case 'highpass':
                 kfilt=np.divide(np.ones_like(filter),filter)
                 sigma=abs(kfilt[1]-kfilt[0])/3
-                F = np.exp(-np.square(km - kfilt[0]) / (2 * sigma**2))
-                F=F/max(F[:])
+                F = np.exp(np.multiply(-1, np.square(km - kfilt[0])) / (2 * sigma**2))
+                F=F/np.max(F)
                 F[km>=kfilt[1]]=1
 
         ZMWF = np.real(ifft2(np.multiply(fft_array,F)))
 
         self.Filter = filter
-        self.ZFilt = ZMWF[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]+self.plane
+        self.ZFilt = ZMWF[(self.pad_x_max + self.dim_x): -(self.pad_x_min + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_min + self.dim_y)]+self.plane
         self.ZDiff = self.z_array-self.ZFilt
 
         return self.ZFilt
-
     
-
-  
+    

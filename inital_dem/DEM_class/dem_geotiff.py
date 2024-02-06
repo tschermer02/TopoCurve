@@ -33,5 +33,6 @@ detrended, plane = dem.detrend()
 
 # FFT
  #(self, 1/200, "lowpass", 0.5)
-print(dem.FFT([200,2000], "lowpass", 0.5))
+#print(dem.FFT([200,2000], "lowpass", 0.5))
+dem.plot(dem.FFT([90,100], "lowpass", 0.5), "fftdem.png")
 
