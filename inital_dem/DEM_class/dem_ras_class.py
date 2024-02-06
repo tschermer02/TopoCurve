@@ -57,9 +57,9 @@ class Dem_Ras_Class():
     def detrend(self): #Function that detrends the array and outputs the detrended array and the plane used. 
         
         self.detrended = signal.detrend(self.z_array)
-        plane = self.z_array-self.detrended
+        self.detrended_plane = self.z_array-self.detrended
 
-        return self.detrended, plane
+        return self.detrended, self.detrended_plane
     
     def plot_func(self, input): #Function to plot array
 
@@ -96,8 +96,8 @@ class Dem_Ras_Class():
         output = data * input #this is the tukey_window * mirrored_array.
         
         # this commented code will cut out the origanal size after the tukey window is applied..
-        # self.dim_x =  self.z_array.shape[0]
-        # self.dim_y =  self.z_array.shape[1]
+        self.dim_x =  self.z_array.shape[0]
+        self.dim_y =  self.z_array.shape[1]
         #output[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]
 
         return output
@@ -139,43 +139,55 @@ class Dem_Ras_Class():
     
     def fftf_2d(self, filter, filter_type):
         input = self.padding_array()
+        self.filter = filter
 
         # Doing the 2d fourier transformation on the input.
         # https://docs.scipy.org/doc/scipy/tutorial/fft.html#and-n-d-discrete-fourier-transforms
         
         input_fft = fft2(input)
-        dkx = 1/(self.dx * self.power_of2); dky = 1/(self.dx * self.power_of2) # Defining wave number increments.
+        dkx = np.divide(1,(self.dx * self.power_of2)); dky = np.divide(1,(self.dx * self.power_of2)) # Defining wave number increments.
         
         # Making the radical wave number matrix
         xc = self.power_of2/2+1; yc = self.power_of2/2+1 # 
         [cols, rows] = np.meshgrid(self.power_of2 , self.power_of2) # matrices of column and row indices 
-        km = np.square(math.sqrt(dky*(rows - yc))) + np.square(math.sqrt(dkx*(rows - xc))) # matrix of radial wavenumbers
+        km = np.square(np.sqrt(dky*(rows - yc))) + np.square(np.sqrt(dkx*(rows - xc))) # km = matrix of radial wavenumbers
 
         
         match filter_type:
 
             case 'lowpass':
                 kfilt=np.divide(1, filter)
-                sigma=abs(kfilt(1)-kfilt(0))/3
-                F= math.exp(-np.square((km-kfilt(0)))/(2*sigma^2))
-                F[km < kfilt(0)]=1
+                sigma=np.abs(kfilt[1]-kfilt[0])/3
+                F = np.exp(-np.square(km - kfilt[0]) / (2 * sigma**2))
+                F[km < kfilt[0]]=1
 
             case 'highpass':
-                kfilt=1./filter
-                sigma=abs(kfilt(1)-kfilt(0))/3
-                F=math.exp(-1*np.square((km-kfilt(2)))/(2*sigma^2))
-                F[km >= kfilt(1)]=1
+                kfilt=np.divide(1, filter)
+                sigma=np.abs(kfilt[1]-kfilt[0])/3
+                F = np.exp(-np.square(km - kfilt[0]) / (2 * sigma**2))
+                F[km >= kfilt[1]]=1
 
         input_fft_real = np.real(ifft2(np.multiply(input_fft,F)))
 
         '''
+        What values to use for filter?
+            190M to Hz
+
+        Is the output of fftf_2d is something that goes into a plot function?
+            Print out
+
         # What are this/ what are they doing?
+
         obj.DEM.ZFilt=ZMWF(r+1:ny-r,c+1:nx-c)+plane
         obj.DEM.ZDiff=obj.DEM.Z-obj.DEM.ZFilt
         obj.Filter=Filter
         '''
+        self.z_filt_array = input_fft_real[(self.pad_x_max + self.dim_x): -(self.pad_x_max + self.dim_x),(self.pad_y_max + self.dim_y): -(self.pad_y_max + self.dim_y)]
+        self.z_filt_array = self.z_filt_array + self.detrended_plane
+        self.z_diff = self.z_array-self.z_filt_array
 
-        return input_fft_real
+
+        return self.z_filt_array
 
 
 

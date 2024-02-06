@@ -17,7 +17,7 @@ tiff_file= "../../repos/TopoCurve/DEM_files/Purgatory.tif"
 dem_test = Dem_Ras_Class(tiff_file)
 
 
-dem_test.plot_func(dem_test.padding_array())
+dem_test.plot_func(dem_test.fftf_2d([2000,200], "lowpass"))
 
 
 
