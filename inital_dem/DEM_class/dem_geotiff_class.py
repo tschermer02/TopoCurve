@@ -118,7 +118,6 @@ class Dem_Class():
        
         xc = self.powerOfTwo/2+1; yc = self.powerOfTwo/2+1 #matrix indices of zero wavenumber
 
-        km = np.ones((self.powerOfTwo, self.powerOfTwo))
         i, j = np.meshgrid(np.arange(self.powerOfTwo), np.arange(self.powerOfTwo))
         km = np.sqrt(np.square(dky * (i - yc)) + np.square(dkx * (j - xc)))
         
