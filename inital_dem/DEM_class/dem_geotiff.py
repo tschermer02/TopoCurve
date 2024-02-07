@@ -18,7 +18,7 @@ dem = Dem_Class(tiff_file)
 detrended, plane = dem.detrend()
 
 # Plotting detrended DEM
-#dem.plot(detrended, "greyscale_dem_detrend.png")
+dem.plot(detrended, "greyscale_dem_detrend.png")
 #print(np.mean(detrended))
 
 # Mirroring DEM on all sides
