@@ -51,8 +51,6 @@ class Dem_Class():
         else:
             raise Exception("WARNING: Grid spacing is not uniform in x and y directions!")
         
-            
-
     def detrend(self):
         self.Z_detrended = signal.detrend(self.z_array)
         self.plane = self.z_array-self.Z_detrended
@@ -107,7 +105,7 @@ class Dem_Class():
         #pads array
         padded_window_array =np.pad(tukey_array, ((self.pad_x_max, self.pad_x_min), (self.pad_y_max, self.pad_y_min)), 'constant', constant_values=(0, 0))
         return padded_window_array
-    #(self, 1/200, "lowpass", 0.5)
+
     def FFT(self, filter, filterType, alphaIn):
         padded_window_array= self.padding(alphaIn)
         #Doing fft on the windowed and padded array
@@ -116,19 +114,14 @@ class Dem_Class():
         self.dx = np.array(self.dx)
         self.powerOfTwo = np.array(self.powerOfTwo)
         dkx = np.divide(1,(self.dx[0]*self.powerOfTwo))
-
-        
         dky = np.divide(1,(self.dx[0]*self.powerOfTwo))
        
         xc = self.powerOfTwo/2+1; yc = self.powerOfTwo/2+1 #matrix indices of zero wavenumber
+
         km = np.ones((self.powerOfTwo, self.powerOfTwo))
         i, j = np.meshgrid(np.arange(self.powerOfTwo), np.arange(self.powerOfTwo))
-
         km = np.sqrt(np.square(dky * (i - yc)) + np.square(dkx * (j - xc)))
         
-
-        #Problem Need to do element wise distance formula
-        #km = np.sqrt(np.square(dky * (rows - yc)) + np.square(dkx * (cols - xc))) #matrix of radial wavenumbers
         match filterType:
             case 'lowpass':
                 kfilt=np.divide(np.ones_like(filter),filter)
