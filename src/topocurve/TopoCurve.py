@@ -96,6 +96,13 @@ class TopoCurve():
             # Build simple x/y vectors for generic plotting fallback
             self.x = np.arange(self.dimx) * self.dx
             self.y = np.arange(self.dimy) * self.dy
+            
+            # Build georeferenced x/y vectors for geolocated plotting and point sampling
+            with rasterio.open(tiff_file) as dataset:
+                bounds = dataset.bounds
+                
+            self.X=np.arange(self.dimx) * self.dx+bounds[0]
+            self.Y=np.arange(self.dimy) * self.dy+bounds[1]
 
         # Generic gridded surface input
         elif z_array is not None:
