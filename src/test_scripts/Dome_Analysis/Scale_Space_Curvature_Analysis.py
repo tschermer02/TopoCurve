@@ -12,14 +12,18 @@ Inputs:
 """
 
 # Import packages
-from topocurve import TopoCurve,SpectralFiltering
+from topocurve import TopoCurve,SpectralFiltering, TopoCurve_Sample
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
 from pathlib import Path
+import geopandas as gpd
+
 
 # ---------------- Import datasets ---------------------
 tiff_file = "/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/DEMs/Stone_Mtn.tif"
+
+shapefile="/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Shapefiles/Stone_Mtn.shp"
 
 # Instantiate TopoCurve object
 dem = TopoCurve(tiff_file=tiff_file)
@@ -34,7 +38,6 @@ dx, dy, filtered_elevation = spectral_filter.FFT(filter, 'lowpass', 0)
 # Compute curvature attributes
 K = dem.CurveCalc(filtered_elevation, dx, dy, 0)
 
+#%%
 
-
-
-
+x,y=dem.TopoCurve_Sample(dem,shapefile,K)

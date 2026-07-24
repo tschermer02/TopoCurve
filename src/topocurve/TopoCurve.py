@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import rasterio
+import geopandas as gpd
 
 from pyproj import Transformer
 from scipy.fft import fft2, ifft2
@@ -175,7 +176,7 @@ class TopoCurve():
         Z = ZFilt  # Input filtered surface
 
         # Compute first derivatives (∂Z/∂x and ∂Z/∂y)
-        SZV, SZU = np.gradient(Z, dy, dx)
+        SZV, SZU = np.gradient(Z, dy, dx,edge_order=2)
 
         # Define tangent vectors (right-handed parameterization basis)
         SXU = np.ones_like(Z)
@@ -197,9 +198,9 @@ class TopoCurve():
         
 
         # Compute derivatives of the normal vector
-        NXV, NXU = np.gradient(NX, dy, dx)
-        NYV, NYU = np.gradient(NY, dy, dx)
-        NZV, NZU = np.gradient(NZ, dy, dx)
+        NXV, NXU = np.gradient(NX, dy, dx,edge_order=2)
+        NYV, NYU = np.gradient(NY, dy, dx,edge_order=2)
+        NZV, NZU = np.gradient(NZ, dy, dx,edge_order=2)
 
         # Compute first fundamental form coefficients
         E = np.einsum('ijk,ijk->ij', SU, SU)
@@ -451,3 +452,41 @@ class TopoCurve():
         plt.tight_layout()
         plt.savefig(os.path.join(output_dir, 'smap.png'), dpi=300)
         plt.show()
+        
+        
+    def TopoCurve_Sample(self,shapefile,CMAP,shapefile_attributes=None):
+            
+        # Import shapefile of sample points
+        s_points = gpd.read_file(shapefile)
+            
+        # Sample point x/y values
+        x = np.array(s_points.geometry.x)
+        y = np.array(s_points.geometry.y)
+          
+        # DEM x/y values
+        X=self.X
+        Y=self.Y
+        
+        k1=np.full(len(y),np.nan)
+        k2=np.full(len(y),np.nan)
+        kg=np.full(len(y),np.nan)
+        km=np.full(len(y),np.nan)
+        for i in range(len(x)):
+             c_in=np.abs(X - x[i]).argmin()
+             r_in=np.abs(Y - y[i]).argmin()
+             k1[i]=CMAP['K1'][r_in,c_in]
+             k2[i]=CMAP['K2'][r_in,c_in]
+             kg[i]=CMAP['KG'][r_in,c_in]
+             km[i]=CMAP['KM'][r_in,c_in]
+             
+        Out={'K1':k1,'K2':k2,'KM':km,'KG':kg}
+            
+        
+        
+        if shapefile_attributes is not None:
+            for i in range(len(shapefile_attributes)):
+                Out[shapefile_attributes[i]]=np.array(s_points[shapefile_attributes[i]])
+                
+             
+            
+        return Out
