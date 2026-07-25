@@ -464,16 +464,18 @@ class TopoCurve():
         y = np.array(s_points.geometry.y)
           
         # DEM x/y values
-        X=self.X
-        Y=self.Y
+        x_v=self.X
+        y_v=self.Y
+        
+        X, Y = np.meshgrid(x_v, np.flip(y_v))
         
         k1=np.full(len(y),np.nan)
         k2=np.full(len(y),np.nan)
         kg=np.full(len(y),np.nan)
         km=np.full(len(y),np.nan)
         for i in range(len(x)):
-             c_in=np.abs(X - x[i]).argmin()
-             r_in=np.abs(Y - y[i]).argmin()
+             c_in=np.abs(X[1,:] - x[i]).argmin()
+             r_in=np.abs(Y[:,1] - y[i]).argmin()
              k1[i]=CMAP['K1'][r_in,c_in]
              k2[i]=CMAP['K2'][r_in,c_in]
              kg[i]=CMAP['KG'][r_in,c_in]
@@ -489,4 +491,4 @@ class TopoCurve():
                 
              
             
-        return Out
+        return Out, X, Y

@@ -12,18 +12,20 @@ Inputs:
 """
 
 # Import packages
-from topocurve import TopoCurve,SpectralFiltering, TopoCurve_Sample
+from topocurve import TopoCurve,SpectralFiltering
 import numpy as np
 import matplotlib.pyplot as plt
-import sys
-from pathlib import Path
 import geopandas as gpd
+import time
+import matplotlib.animation as animation
 
 
-# ---------------- Import datasets ---------------------
-tiff_file = "/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/DEMs/Stone_Mtn.tif"
+#%% ---------------- Import datasets ---------------------
+tiff_file = "/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/DEMs/40_Acre_Rock.tif"
 
-shapefile="/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Shapefiles/Stone_Mtn.shp"
+shapefile="/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Shapefiles/40_Acre_Rock.shp"
+s_points = gpd.read_file(shapefile)
+x = np.array(s_points.geometry.x)
 
 # Instantiate TopoCurve object
 dem = TopoCurve(tiff_file=tiff_file)
@@ -31,13 +33,57 @@ dem = TopoCurve(tiff_file=tiff_file)
 # Instantiate SpectralFiltering object
 spectral_filter = SpectralFiltering(tiff_file)
 
-# Apply FFT filtering with a lowpass filter
-filter=[150,200] # Low pass filter cutoffs
-dx, dy, filtered_elevation = spectral_filter.FFT(filter, 'lowpass', 0)
 
-# Compute curvature attributes
-K = dem.CurveCalc(filtered_elevation, dx, dy, 0)
+#%% Build filter 
+ns=20
+df=5
+KM = np.full((len(x),ns), np.nan)
+F=np.array([1,6])
+f=np.full(ns,np.nan)
+
+start_time = time.perf_counter()  # Record start time
+for i in range(ns):
+    dx, dy, filtered_elevation = spectral_filter.FFT(F, 'lowpass', 0)
+    K = dem.CurveCalc(filtered_elevation, dx, dy, 0)
+    Att,X,Y=dem.TopoCurve_Sample(shapefile,K[6],shapefile_attributes=["Avg"])
+    
+    KM[:,i]=Att["KM"]
+    f[i]=F[1]
+    F=F+df
+    it_time = time.perf_counter()    # Record end time
+    elapsed = it_time - start_time
+    print(f"Iteration: {i+1} of {ns}")
+    print(f"Elapsed time: {elapsed:0.0f} seconds\n")
+
+
+#%%
+for i in range(len(x)):
+    plt.plot(f,((KM[i,:])),color='k',linewidth=0.5)
+    
+plt.plot(f,(np.median((KM),axis=0)),color='r')
+plt.show()
+#%%
+plt.scatter(Att['Avg'],np.median(KM,axis=1))
 
 #%%
 
-x,y=dem.TopoCurve_Sample(dem,shapefile,K)
+x_a=Att['Avg']
+y_a=KM
+fig, ax = plt.subplots()
+scat = ax.scatter(x_a,y_a[:, 0])
+ax.set_xlim(0,100)
+ax.set_ylim(-0.01,0.01)
+
+def update(frame):
+    scat.set_offsets(np.c_[x_a, y_a[:, frame]])
+    return scat,
+
+ani = animation.FuncAnimation(fig, update, frames=ns, interval=1, blit=True)
+
+# Save as gif (no extra install needed)
+ani.save('scatter.gif', writer='pillow', fps=1)
+
+# Or save as mp4 (requires: brew install ffmpeg)
+ani.save('scatter.mp4', writer='ffmpeg', fps=20)
+
+plt.show()
