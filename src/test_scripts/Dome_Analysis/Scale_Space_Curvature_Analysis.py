@@ -21,9 +21,9 @@ import matplotlib.animation as animation
 
 
 #%% ---------------- Import datasets ---------------------
-tiff_file = "/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Yosemite/Clipped_Rasters/Olmsted_Upper.tif"
+tiff_file = "/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Yosemite/Clipped_Rasters/Pothole.tif"
 
-shapefile="/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Yosemite/Shapefiles/Olmsted_Upper.shp"
+shapefile="/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Yosemite/Shapefiles/Pothole.shp"
 s_points = gpd.read_file(shapefile)
 x = np.array(s_points.geometry.x)
 
@@ -86,7 +86,7 @@ ani = animation.FuncAnimation(fig, update, frames=ns, interval=1, blit=True)
 # ani.save('scatter.gif', writer='pillow', fps=1)
 
 # Or save as mp4 (requires: brew install ffmpeg)
-ani.save('/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Animations/Puppy_0to200.mp4', writer='ffmpeg', fps=6)
+ani.save('/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Animations/Pothole_0to200.mp4', writer='ffmpeg', fps=6)
 
 plt.show()
 
@@ -94,8 +94,7 @@ plt.show()
 
 import pickle
 
-with open('/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Python_Dictionaries/Puppy.pkl', 'wb') as r:
+with open('/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Python_Dictionaries/Pothole.pkl', 'wb') as r:
     pickle.dump(Att, r)
 
-with open('/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Python_Dictionaries/Twaine_Harte_West.pkl', 'rb') as r:
-    my_dict = pickle.load(r)
+
