@@ -21,9 +21,9 @@ import matplotlib.animation as animation
 
 
 #%% ---------------- Import datasets ---------------------
-tiff_file = "/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Yosemite/Clipped_Rasters/Pothole.tif"
+tiff_file = "/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/DEMs/Twaine_Harte_West.tif"
 
-shapefile="/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Yosemite/Shapefiles/Pothole.shp"
+shapefile="/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Shapefiles/Twaine_Harte_West.shp"
 s_points = gpd.read_file(shapefile)
 x = np.array(s_points.geometry.x)
 
@@ -45,7 +45,7 @@ start_time = time.perf_counter()  # Record start time
 for i in range(ns):
     dx, dy, filtered_elevation = spectral_filter.FFT(F, 'lowpass', 0)
     K = dem.CurveCalc(filtered_elevation, dx, dy, 0)
-    Att,X,Y=dem.TopoCurve_Sample(shapefile,K[6],shapefile_attributes=["Sheet Thic"])
+    Att,X,Y=dem.TopoCurve_Sample(shapefile,K[6],shapefile_attributes=["Avg"])
     
     KM[:,i]=Att["KM"]
     f[i]=F[1]
@@ -57,6 +57,7 @@ for i in range(ns):
 
 Att['f']=f
 Att['KM_Array']=KM
+
 #%%
 # for i in range(len(x)):
 #     plt.plot(f,((KM[i,:])),color='k',linewidth=0.5)

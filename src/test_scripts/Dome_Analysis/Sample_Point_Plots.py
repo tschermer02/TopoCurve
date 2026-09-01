@@ -15,13 +15,36 @@ Domes=["Forty_Acre_Rock","Twaine_Harte_West","Twaine_Harte","Stone_Mtn","Rocky_F
        "Puppy","Sentinal","Turtleback"]
 
 D={}
+Th=[]
+km=[]
+th_med=[]
 
 for d in Domes:
    with open('/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Python_Dictionaries/'+''+d+''+'.pkl', 'rb') as r:
        D[d] = pickle.load(r)
        if "Sheet Thic" in D[d]:
                D[d]["Avg"] = D[d].pop("Sheet Thic")
-       plt.scatter((D[d]['Avg']),D[d]['KM'])
-plt.show()
-    
-# plt.plot(D['f'],D['KM_Array'][5,:])
+       Avg=D[d]["Avg"]   
+       Avg=Avg.tolist()
+       
+       KM=D[d]["KM"]
+       KM=KM.tolist()
+       
+       print(d)
+       print(np.nanmedian(D[d]["Avg"]))
+       
+       km=km+KM
+       Th=Th+Avg
+
+  
+plt.scatter(Th,km)
+
+#%% Plot thermal stresses
+
+E=60e9
+alpha_T=8e-6
+v=0.25
+
+sd=0.2
+
+tau=E*alpha_T/(1-v)*np.exp(-np.array(Th)/100/sd)
