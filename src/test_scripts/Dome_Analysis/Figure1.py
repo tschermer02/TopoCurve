@@ -19,10 +19,10 @@ from cmcrameri import cm
 
 path="/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Python_Dictionaries/"
 
-dome=["Twaine_Harte_West","Twaine_Harte","Stone_Mtn","Rocky_Face","Forty_Acre_Rock","Half_Dome","North_Dome","Sentinal","Lembert_Small",
+dome=["Twaine_Harte","Twaine_Harte_West","Stone_Mtn","Rocky_Face","Forty_Acre_Rock","Half_Dome","North_Dome","Sentinal","Lembert_Small",
       "Olmsted_Lower","Olmsted_Upper","Pothole","Puppy","Turtleback"]
 
-dome_name=["Twaine Harte West","Twaine Harte Rock","Stone Mountain","Rocky Face","Forty Acre Rock","Half Dome","North Dome","Sentinal","Lembert",
+dome_name=["Foothills 1 CA","Foothills 2 CA","Escarpment NC","Foothills NC","Piedmont SC","Half Dome","North Dome","Sentinal","Lembert",
       "Lower Olmsted","Upper Olmsted","Pothole","Puppy","Turtleback"]
 
 D={}
@@ -37,7 +37,7 @@ for i in range(14):
 
 #%% Dd dictionary attribute from shapefile
 
-index=5
+index=1
 shape_path="/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Shapefiles/"
 
 shapefile=f"{shape_path}{dome[index]}{".shp"}"
@@ -119,13 +119,13 @@ km_range=np.arange(0,44,1)
 ylim=[-0.03, 0.07]
 
 
-# Forty Acre Rock
-q1_x, q3_x = np.nanpercentile(D["Forty Acre Rock"]["Avg"], [25, 75])
-q1_y, q3_y = np.nanpercentile(D["Forty Acre Rock"]["KM_Array"][:,km_range], [25, 75])
-min_x, max_x = np.nanmin(D["Forty Acre Rock"]["Avg"]), np.max(D["Forty Acre Rock"]["Avg"])
-min_y, max_y = np.nanmin(D["Forty Acre Rock"]["KM_Array"][:,km_range]), np.max(D["Forty Acre Rock"]["KM_Array"][:,km_range])
-med_x, med_y = np.nanmedian(D["Forty Acre Rock"]["Avg"]), np.nanmedian(D["Forty Acre Rock"]["KM_Array"][:,km_range])
-axf[0].scatter(D["Forty Acre Rock"]["Avg"],np.nanmedian(D["Forty Acre Rock"]["KM_Array"][:,km_range],axis=1),
+# Piedmont SC
+q1_x, q3_x = np.nanpercentile(D["Piedmont SC"]["Avg"], [25, 75])
+q1_y, q3_y = np.nanpercentile(D["Piedmont SC"]["KM_Array"][:,km_range], [25, 75])
+min_x, max_x = np.nanmin(D["Piedmont SC"]["Avg"]), np.max(D["Piedmont SC"]["Avg"])
+min_y, max_y = np.nanmin(D["Piedmont SC"]["KM_Array"][:,km_range]), np.max(D["Piedmont SC"]["KM_Array"][:,km_range])
+med_x, med_y = np.nanmedian(D["Piedmont SC"]["Avg"]), np.nanmedian(D["Piedmont SC"]["KM_Array"][:,km_range])
+axf[0].scatter(D["Piedmont SC"]["Avg"],np.nanmedian(D["Piedmont SC"]["KM_Array"][:,km_range],axis=1),
                c=cmap[0],edgecolors='k', linewidths=1,s=50,marker='D')
 
 axf[0].set_xlim(0,150)
@@ -135,8 +135,8 @@ axf[0].set_ylabel(r'$K_M$ ($m^{-1}$)')
 axf[0].set_title("Piedmont SC")
 axf[0].text(-0.3,0.99,"A",transform=axf[0].transAxes,fontsize=14)
 
-# Rocky Face
-axf[1].scatter(D["Rocky Face"]["Avg"],np.nanmedian(D["Rocky Face"]["KM_Array"][:,km_range],axis=1),
+# Foothills NC
+axf[1].scatter(D["Foothills NC"]["Avg"],np.nanmedian(D["Foothills NC"]["KM_Array"][:,km_range],axis=1),
                c=cmap[1],edgecolors='k', linewidths=1,s=50,marker='^')
 axf[1].set_xlim(0,150)
 axf[1].set_ylim(ylim[0],ylim[1])
@@ -146,7 +146,7 @@ axf[1].set_title("Foothills NC")
 axf[1].text(-0.3,0.99,"B",transform=axf[1].transAxes,fontsize=14)
 
 # Stone Mtn
-axf[2].scatter(D["Stone Mountain"]["Avg"],np.nanmedian(D["Stone Mountain"]["KM_Array"][:,km_range],axis=1),
+axf[2].scatter(D["Escarpment NC"]["Avg"],np.nanmedian(D["Escarpment NC"]["KM_Array"][:,km_range],axis=1),
                c=cmap[2],edgecolors='k', linewidths=1,s=50,marker='s')
 axf[2].set_xlim(0,150)
 axf[2].set_ylim(ylim[0],ylim[1])
@@ -156,9 +156,9 @@ axf[2].set_title("Escarpment NC")
 axf[2].text(-0.3,0.99,"C",transform=axf[2].transAxes,fontsize=14)
 
 # Twaine Harte Plots
-axf[3].scatter(D["Twaine Harte West"]["Avg"],np.nanmedian(D["Twaine Harte West"]["KM_Array"][:,km_range],axis=1),
+axf[3].scatter(D["Foothills 2 CA"]["Avg"],np.nanmedian(D["Foothills 2 CA"]["KM_Array"][:,km_range],axis=1),
                c=cmap[3],edgecolors='k', linewidths=1,s=50    )
-axf[3].scatter(D["Twaine Harte Rock"]["Avg"],np.nanmedian(D["Twaine Harte Rock"]["KM_Array"][:,km_range],axis=1),
+axf[3].scatter(D["Foothills 1 CA"]["Avg"],np.nanmedian(D["Foothills 1 CA"]["KM_Array"][:,km_range],axis=1),
                c=cmap[3],edgecolors='k', linewidths=1,s=50)
 # axf[3].plot([17.2,17.2],[-0.005,0.02])
 axf[3].set_xlim(0,150)
@@ -222,8 +222,8 @@ f_range4=np.arange(55,74)
 f_range5=np.arange(75,94)
 
 
-# Forty Acre Rock
-kmfa=D["Forty Acre Rock"]["KM_Array"]
+# Piedmont SC
+kmfa=D["Piedmont SC"]["KM_Array"]
 fa1=pd.DataFrame({"KMFA1": kmfa[:,f_range1].flatten()})
 fa1 = fa1["KMFA1"].dropna()
 kde_fa1 = gaussian_kde(fa1)
@@ -249,8 +249,8 @@ fa5 = fa5["KMFA5"].dropna()
 kde_fa5 = gaussian_kde(fa5)
 KDEFA5 = kde_fa5(x_grid)
 
-# Rocky Face
-kmrf=D["Rocky Face"]["KM_Array"]
+# Foothills NC
+kmrf=D["Foothills NC"]["KM_Array"]
 rf1=pd.DataFrame({"KMRF1": kmrf[:,f_range1].flatten()})
 rf1 = rf1["KMRF1"].dropna()
 kde_rf1 = gaussian_kde(rf1)
@@ -276,8 +276,8 @@ rf5 = rf5["KMrf5"].dropna()
 kde_rf5 = gaussian_kde(rf5)
 KDErf5 = kde_rf5(x_grid)
 
-# Stone Mountain
-kmsm=D["Stone Mountain"]["KM_Array"]
+# Escarpment NC
+kmsm=D["Escarpment NC"]["KM_Array"]
 sm1=pd.DataFrame({"kmsm1": kmsm[:,f_range1].flatten()})
 sm1 = sm1["kmsm1"].dropna()
 kde_sm1 = gaussian_kde(sm1)
@@ -304,7 +304,7 @@ kde_sm5 = gaussian_kde(sm5)
 KDEsm5 = kde_sm5(x_grid)
 
 # Twaine Harte
-kmth=np.vstack((D["Twaine Harte West"]["KM_Array"],D["Twaine Harte Rock"]["KM_Array"]))
+kmth=np.vstack((D["Foothills 2 CA"]["KM_Array"],D["Foothills 1 CA"]["KM_Array"]))
 th1=pd.DataFrame({"kmth1": kmth[:,f_range1].flatten()})
 th1 = th1["kmth1"].dropna()
 kde_th1 = gaussian_kde(th1)
@@ -520,6 +520,8 @@ h, l = axf[4].get_legend_handles_labels()
 axf[5].axis('off')
 axf[5].legend(h,l,loc='center',fontsize=14,frameon=False)
 plt.tight_layout()
+
+plt.savefig('/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Figures/Figure_7.png')
 plt.show()
 
 
@@ -535,10 +537,10 @@ xlim=[6,100]
 ylim=[-0.15,0.15]
 
 
-# Forty Acre Rock
-f=D["Forty Acre Rock"]["f"]
-km=np.vstack((D["Forty Acre Rock"]["KM_Array"]))
-thk=D["Forty Acre Rock"]["Avg"]
+# Piedmont SC
+f=D["Piedmont SC"]["f"]
+km=np.vstack((D["Piedmont SC"]["KM_Array"]))
+thk=D["Piedmont SC"]["Avg"]
 indices = np.argwhere(np.isnan(thk))
 km[indices,:]=np.nan
 
@@ -559,10 +561,10 @@ axf[0].set_ylim(ylim[0],ylim[1])
 axf[0].text(-0.32,0.99,"A",transform=axf[0].transAxes,fontsize=14)
 # axf[i].set_ylim(-0.1,0.1)
 
-# Rocky Face
-f=D["Rocky Face"]["f"]
-km=np.vstack((D["Rocky Face"]["KM_Array"]))
-thk=D["Rocky Face"]["Avg"]
+# Foothills NC
+f=D["Foothills NC"]["f"]
+km=np.vstack((D["Foothills NC"]["KM_Array"]))
+thk=D["Foothills NC"]["Avg"]
 indices = np.argwhere(np.isnan(thk))
 km[indices,:]=np.nan
 
@@ -582,10 +584,10 @@ axf[1].set_xlim(xlim[0],xlim[1])
 axf[1].set_ylim(ylim[0],ylim[1])
 axf[1].text(-0.32,0.99,"B",transform=axf[1].transAxes,fontsize=14)
 
-# Stone Mountain
-f=D["Stone Mountain"]["f"]
-km=np.vstack((D["Stone Mountain"]["KM_Array"]))
-thk=D["Stone Mountain"]["Avg"]
+# Escarpment NC
+f=D["Escarpment NC"]["f"]
+km=np.vstack((D["Escarpment NC"]["KM_Array"]))
+thk=D["Escarpment NC"]["Avg"]
 indices = np.argwhere(np.isnan(thk))
 km[indices,:]=np.nan
 
@@ -605,9 +607,9 @@ axf[2].set_ylim(ylim[0],ylim[1])
 axf[2].text(-0.32,0.99,"C",transform=axf[2].transAxes,fontsize=14)
 
 # Twaine Harte
-f=D["Twaine Harte West"]["f"]
-km=np.vstack((D["Twaine Harte West"]["KM_Array"],D["Twaine Harte Rock"]["KM_Array"]))
-thk=np.concatenate((D["Twaine Harte West"]["Avg"],D["Twaine Harte Rock"]["Avg"]))
+f=D["Foothills 2 CA"]["f"]
+km=np.vstack((D["Foothills 2 CA"]["KM_Array"],D["Foothills 1 CA"]["KM_Array"]))
+thk=np.concatenate((D["Foothills 2 CA"]["Avg"],D["Foothills 1 CA"]["Avg"]))
 indices = np.argwhere(np.isnan(thk))
 km[indices,:]=np.nan
 
@@ -671,6 +673,8 @@ axf[5].set_ylim(ylim[0],ylim[1])
 axf[5].text(-0.32,0.99,"F",transform=axf[5].transAxes,fontsize=14)
 
 plt.tight_layout()
+
+plt.savefig('/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Figures/Figure_6.png')
 plt.show()
 
 
@@ -678,29 +682,29 @@ plt.show()
 #%% KDE of slab thicknesses
 x_grid = np.linspace(0, 120, 200)
 
-# Forty Acre Rock
-thkfa=D["Forty Acre Rock"]["Avg"]
+# Piedmont SC
+thkfa=D["Piedmont SC"]["Avg"]
 fa=pd.DataFrame({"thfa": thkfa})
 fa = fa["thfa"].dropna()
 kde_fa = gaussian_kde(fa)
 KDEfa = kde_fa(x_grid)
 
-# Rocky Face
-thkrf=D["Rocky Face"]["Avg"]
+# Foothills NC
+thkrf=D["Foothills NC"]["Avg"]
 rf=pd.DataFrame({"thrf": thkrf})
 rf = rf["thrf"].dropna()
 kde_rf = gaussian_kde(rf)
 KDErf = kde_rf(x_grid)
 
-# Stone Mountain
-thksm=D["Stone Mountain"]["Avg"]
+# Escarpment NC
+thksm=D["Escarpment NC"]["Avg"]
 sm=pd.DataFrame({"thsm": thksm})
 sm = sm["thsm"].dropna()
 kde_sm = gaussian_kde(sm)
 KDEsm = kde_sm(x_grid)
 
 # Twaine Harte
-thkth=np.concatenate((D["Twaine Harte West"]["Avg"],D["Twaine Harte Rock"]["Avg"]))
+thkth=np.concatenate((D["Foothills 2 CA"]["Avg"],D["Foothills 1 CA"]["Avg"]))
 th=pd.DataFrame({"thth": thkth})
 th = th["thth"].dropna()
 kde_th = gaussian_kde(th)
@@ -730,30 +734,31 @@ lw=2
 sd=[20.2,21.4,20.3,17.2]
 
 axf[0].plot(x_grid,np.exp(-x_grid/sd[0]),c=cmap[0])
-axf[0].axvline(x=sd[0], c=cmap[0], linestyle="--",linewidth=3)
-axf[0].axvline(x=2*sd[0], c=cmap[0], linestyle="--",linewidth=2)
+axf[0].axvline(x=sd[0], c=cmap[0], linestyle="--",linewidth=3,label='Piedmont SC')
+# axf[0].axvline(x=2*sd[0], c=cmap[0], linestyle="--",linewidth=2)
 axf[0].axvline(x=3*sd[0], c=cmap[0], linestyle="--",linewidth=1)
 
 axf[0].plot(x_grid,np.exp(-x_grid/sd[1]),c=cmap[1])
-axf[0].axvline(x=sd[1], c=cmap[1], linestyle="-.",linewidth=3)
-axf[0].axvline(x=2*sd[1], c=cmap[1], linestyle="-.",linewidth=2)
+axf[0].axvline(x=sd[1], c=cmap[1], linestyle="-.",linewidth=3,label='Foothills NC')
+# axf[0].axvline(x=2*sd[1], c=cmap[1], linestyle="-.",linewidth=2)
 axf[0].axvline(x=3*sd[1], c=cmap[1], linestyle="-.",linewidth=1)
 
 axf[0].plot(x_grid,np.exp(-x_grid/sd[2]),c=cmap[2])
-axf[0].axvline(x=sd[2], c=cmap[2], linestyle=":",linewidth=3)
-axf[0].axvline(x=2*sd[2], c=cmap[2], linestyle=":",linewidth=2)
+axf[0].axvline(x=sd[2], c=cmap[2], linestyle=":",linewidth=3,label='Escarpment NC')
+# axf[0].axvline(x=2*sd[2], c=cmap[2], linestyle=":",linewidth=2)
 axf[0].axvline(x=3*sd[2], c=cmap[2], linestyle=":",linewidth=1)
 
 axf[0].plot(x_grid,np.exp(-x_grid/sd[3]),c=cmap[3])
-axf[0].axvline(x=sd[3], c=cmap[3], linestyle=":",linewidth=3)
-axf[0].axvline(x=2*sd[3], c=cmap[3], linestyle=":",linewidth=2)
-axf[0].axvline(x=3*sd[3], c=cmap[3], linestyle=":",linewidth=1)
+axf[0].axvline(x=sd[3], c=cmap[3], linestyle="-.",linewidth=3,label='Foothills CA')
+# axf[0].axvline(x=2*sd[3], c=cmap[3], linestyle=":",linewidth=2)
+axf[0].axvline(x=3*sd[3], c=cmap[3], linestyle="-.",linewidth=1)
 
 axf[0].set_ylabel(r"$|\Delta T|/|\Delta T_{s}|$")
 axf[0].set_xlabel(r"Depth (cm)")
 axf[0].set_xlim(0,120)
 axf[0].text(-0.13,0.99,"A",transform=axf[0].transAxes,fontsize=14)
 
+axf[0].legend()
 axf[1].plot(x_grid,KDEfa,c=cmap[0],linewidth=lw,label="Piedmont SC")
 axf[1].plot(x_grid,KDErf,c=cmap[1],linewidth=lw,label="Foothills NC")
 axf[1].plot(x_grid,KDEsm,c=cmap[2],linewidth=lw,label="Escarpment NC")
@@ -766,6 +771,7 @@ axf[1].set_xlim(0,120)
 axf[1].legend(loc="upper right")
 axf[1].text(-0.13,0.99,"B",transform=axf[1].transAxes,fontsize=14)
 
+plt.savefig('/Users/ntklema/Library/CloudStorage/OneDrive-FortLewisCollege/Research_Projects/Dome Exfoliation/Dome_Exfoliation_2/Figures/Figure_8.png')
 #%% Phi metric from thermal perturbation to periodic 1d topography
 """
 plot_phi.py
