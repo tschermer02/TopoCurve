@@ -222,6 +222,7 @@ class TopoCurve():
 
         K2 = -(-b + np.sqrt(np.abs(b**2 - 4 * a * c))) / (2 * a)
         K1 = -(-b - np.sqrt(np.abs(b**2 - 4 * a * c))) / (2 * a)
+        
 
         # Threshold small curvature values
         K1[np.abs(K1) <= kt] = 0
@@ -230,6 +231,13 @@ class TopoCurve():
         # Compute derived curvature metrics
         KM = 0.5 * (K1 + K2)  # Mean curvature
         KG = K1 * K2           # Gaussian curvature
+        
+        # Calculate profile and contour curvatures
+        # Contour curvature formula
+        k_c=(-e*SZV**2+2*f*SZU*SZV-g*SZU**2)/(E*SZV**2-2*F*SZU*SZV+G*SZU**2)
+        
+        # k_p from mean curvature relation
+        k_p=2*KM-k_c
 
         SMAP = np.empty_like(KG) * np.nan
         SDist = [[None] * 9, [None] * 9]
@@ -290,6 +298,9 @@ class TopoCurve():
             'KM': KM,
             'K1': K1,
             'K2': K2,
+            'k_c': k_c,
+            'k_p': k_p,
+            
         }
         
         
