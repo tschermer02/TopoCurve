@@ -2,7 +2,7 @@
 import math
 import numpy as np
 from scipy.fft import fft2, ifft2, fftshift, ifftshift
-from photutils.psf import TukeyWindow
+from photutils.psf_matching import TukeyWindow
 from scipy import signal
 from .TopoCurve import TopoCurve
 from sklearn.linear_model import LinearRegression

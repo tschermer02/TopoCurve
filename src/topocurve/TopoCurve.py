@@ -9,7 +9,7 @@ import geopandas as gpd
 
 from pyproj import Transformer
 from scipy.fft import fft2, ifft2
-from photutils.psf import TukeyWindow
+from photutils.psf_matching import TukeyWindow
 from PIL import Image
 from tifffile import TiffFile
 from geotiff import GeoTiff

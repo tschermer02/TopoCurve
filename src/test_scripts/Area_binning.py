@@ -24,10 +24,10 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 # -------------- User inputs for generating TopoCurve object ------------
 
 # Path to the TIFF file (if using geotiff for DEM)
-tiff_file = 'Oregon_Coast_Range_Files/Umpqua_10m_2.tif'
+tiff_file = 'test_scripts/Oregon_Coast_Range_Files/Umpqua_10m_2.tif'
 
 # Define the path to a mask shapefile to select ROI
-mask_path='Oregon_Coast_Range_Files/Umpqua_10m_2_Basins.shp'
+mask_path='/Users/ntklema/Documents/GitHub/topoCurve1/src/test_scripts/Oregon_Coast_Range_Files/Umpqua_Order1_Basins.shx'
 mask = gpd.read_file(mask_path)
 
 #Filter DEM and calculate curvatures
