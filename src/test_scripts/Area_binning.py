@@ -27,7 +27,7 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 tiff_file = 'test_scripts/Oregon_Coast_Range_Files/Umpqua_10m_2.tif'
 
 # Define the path to a mask shapefile to select ROI
-mask_path='/Users/ntklema/Documents/GitHub/topoCurve1/src/test_scripts/Oregon_Coast_Range_Files/Umpqua_Order1_Basins.shx'
+mask_path='test_scripts/Oregon_Coast_Range_Files/Umpqua_Order1_Basins.shx'
 mask = gpd.read_file(mask_path)
 
 #Filter DEM and calculate curvatures
@@ -87,7 +87,7 @@ nb = 100 # number of area bins
 
 # Define log(area) range for binning algorithm
 mn_log_A =1.9 
-max_log_A=7.3
+max_log_A=4
 
 # Generate log10(area) vector
 av=np.linspace(mn_log_A,max_log_A,nb)

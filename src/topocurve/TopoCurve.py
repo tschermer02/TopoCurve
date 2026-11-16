@@ -300,6 +300,8 @@ class TopoCurve():
             'K2': K2,
             'k_c': k_c,
             'k_p': k_p,
+            'Sl': Sl,
+            'tw2': k_p*k_c-KG
             
         }
         
